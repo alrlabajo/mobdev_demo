@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "746639097666",
+    "project_id": "goals-app-f083e",
+    "storage_bucket": "goals-app-f083e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746639097666:android:e6176ee301b28f92a4d2db",
+        "android_client_info": {
+          "package_name": "com.example.goals_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoECui6fSHXFOuXNVo2vxQa8Hro3C4eJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
