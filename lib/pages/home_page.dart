@@ -10,7 +10,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   //Firestore File
   final FirestoreService firestoreService = FirestoreService();
 
@@ -18,49 +17,69 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController textController = TextEditingController();
 
   //Dialog Box
-  void notesDialogBox ({String? docID}){
+  void notesDialogBox({String? docID}) {
     showDialog(
-      context: context, 
-      builder: (context)=>AlertDialog(
-        content: TextField( //Text Input
-          controller: textController,
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              if(docID == null) {
-                firestoreService.addGoal(textController.text);
-              }
+        context: context,
+        builder: (context) => AlertDialog(
+              content: TextField(
+                //Text Input
+                controller: textController,
+              ),
+              actions: [
+                ElevatedButton(
+                    onPressed: () {
+                      if (docID == null) {
+                        firestoreService.addGoal(textController.text);
+                      } else {
+                        firestoreService.updateGoals(
+                            docID, textController.text);
+                      }
 
-              else {
-                firestoreService.updateGoals(docID, textController.text);
-              }
+                      textController.clear(); // Clear text field after saving
 
-              textController.clear(); // Clear text field after saving
-
-              Navigator.pop(context); // Close dialog box
-            }, 
-            child: const Text("Add Goal")
-            )
-        ],
-      ));
+                      Navigator.pop(context); // Close dialog box
+                    },
+                    child: const Text("Add Goal"))
+              ],
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Goals')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: notesDialogBox,
-        child: const Icon(Icons.add)
+      appBar: AppBar(
+        title: const Text(
+          'Goals',
+          style: TextStyle(color: Colors.white),
         ),
-        body: StreamBuilder<QuerySnapshot>(
+        centerTitle: true,
+        
+        actions: <Widget>[
+          IconButton(
+            onPressed: notesDialogBox, 
+            icon: const Icon(Icons.add),
+            color: Colors.white,
+          )
+        ],
+        backgroundColor: Colors.orangeAccent,
+        shape:  const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25)
+          )
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        foregroundColor: Colors.white,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
           stream: firestoreService.getGoalsStream(),
           builder: (context, snapshot) {
-            if(snapshot.hasData) {
+            if (snapshot.hasData) {
               List goalsList = snapshot.data!.docs;
 
-              return ListView.builder (
+              return ListView.separated(
                 itemCount: goalsList.length,
                 itemBuilder: (context, index) {
                   //Get individual goal from database
@@ -72,29 +91,38 @@ class _HomePageState extends State<HomePage> {
                       document.data() as Map<String, dynamic>;
                   String goalText = data['goal'];
 
-                  //Display
-                  return ListTile (
-                    title: Text(goalText),
-                    trailing: Row (
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: ()=> notesDialogBox(docID: docID ),
-                          icon: const Icon(Icons.keyboard_control_key_rounded),
-                        ),
-                        
-                        IconButton(
-                          onPressed: ()=> firestoreService.deleteGoals(docID),
-                          icon: const Icon(Icons.delete),
-                        )
-                      ],
-                    )
+                  // Display
+                  return Padding ( 
+                    padding: const EdgeInsets.all(8.0), // Add padding here
+                    child: ListTile(
+                      title: Text(
+                        goalText,
+                        style: TextStyle(color: Colors.white)
+                      ),
+                      tileColor: Colors.deepPurpleAccent,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => notesDialogBox(docID: docID),
+                            icon: const Icon(Icons.edit),
+                            color: Colors.white,
+                          ),
+                          IconButton(
+                            onPressed: () => firestoreService.deleteGoals(docID),
+                            icon: const Icon(Icons.delete),
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
+                separatorBuilder: (context, index) => const Divider(),
               );
             }
             else {
-              return const Text("You haven't set your goals");
+              return const Text('No goals yet...');
             }
           }
         ),
