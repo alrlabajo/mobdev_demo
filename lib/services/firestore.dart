@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
   //Get List of Goals
-  final CollectionReference goals = FirebaseFirestore.instance.collection("goals");
+  final CollectionReference goals =
+      FirebaseFirestore.instance.collection("goals");
 
   //Create: Add new goal to database
   Future<void> addGoal(String goal) {

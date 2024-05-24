@@ -16,6 +16,15 @@ class _HomePageState extends State<HomePage> {
   //Text Controller
   final TextEditingController textController = TextEditingController();
 
+  //Sorting
+  bool _isSortedAscending = true;
+
+  void toggleSortOrder() {
+    setState(() {
+      _isSortedAscending = !_isSortedAscending;
+    });
+  }
+
   //Dialog Box
   void notesDialogBox({String? docID}) {
     showDialog(
@@ -48,26 +57,28 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: toggleSortOrder,
+          icon: const Icon(Icons.sort),
+          color: Colors.white,
+        ),
         title: const Text(
           'Goals',
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        
         actions: <Widget>[
           IconButton(
-            onPressed: notesDialogBox, 
+            onPressed: notesDialogBox,
             icon: const Icon(Icons.add),
             color: Colors.white,
           )
         ],
         backgroundColor: Colors.orangeAccent,
-        shape:  const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25),
-            bottomRight: Radius.circular(25)
-          )
-        ),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(25),
+                bottomRight: Radius.circular(25))),
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
@@ -78,6 +89,16 @@ class _HomePageState extends State<HomePage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List goalsList = snapshot.data!.docs;
+
+              // Sort goalsList alphabetically based on the goal text
+              goalsList.sort((a, b) {
+                var aData = a.data() as Map<String, dynamic>;
+                var bData = b.data() as Map<String, dynamic>;
+
+                return _isSortedAscending
+                    ? aData['goal'].compareTo(bData['goal'])
+                    : bData['goal'].compareTo(aData['goal']);
+              });
 
               return ListView.separated(
                 itemCount: goalsList.length,
@@ -92,14 +113,18 @@ class _HomePageState extends State<HomePage> {
                   String goalText = data['goal'];
 
                   // Display
-                  return Padding ( 
-                    padding: const EdgeInsets.all(8.0), // Add padding here
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
                     child: ListTile(
-                      title: Text(
-                        goalText,
-                        style: TextStyle(color: Colors.white)
-                      ),
-                      tileColor: Colors.deepPurpleAccent,
+                      title:
+                          Text(goalText, style: TextStyle(color: Colors.white)),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              topRight: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                              bottomRight: Radius.circular(5))),
+                      tileColor: Colors.lightBlueAccent,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -109,7 +134,8 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                           IconButton(
-                            onPressed: () => firestoreService.deleteGoals(docID),
+                            onPressed: () =>
+                                firestoreService.deleteGoals(docID),
                             icon: const Icon(Icons.delete),
                             color: Colors.white,
                           ),
@@ -118,14 +144,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 },
-                separatorBuilder: (context, index) => const Divider(),
+                // Separator for list
+                separatorBuilder: (context, index) => const Divider(
+                  color: Colors.white,
+                  thickness: 0.5,
+                ),
               );
-            }
-            else {
+            } else {
               return const Text('No goals yet...');
             }
-          }
-        ),
+          }),
     );
   }
 }
