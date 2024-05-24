@@ -38,10 +38,13 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                     onPressed: () {
                       if (docID == null) {
-                        firestoreService.addGoal(textController.text);
+                        firestoreService
+                            .addGoal(textController.text); //from firestore file
                       } else {
                         firestoreService.updateGoals(
-                            docID, textController.text);
+                            // from firestore file
+                            docID,
+                            textController.text);
                       }
 
                       textController.clear(); // Clear text field after saving
@@ -85,75 +88,79 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: firestoreService.getGoalsStream(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List goalsList = snapshot.data!.docs;
+        stream: firestoreService.getGoalsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List goalsList = snapshot.data!.docs;
 
-              // Sort goalsList alphabetically based on the goal text
-              goalsList.sort((a, b) {
-                var aData = a.data() as Map<String, dynamic>;
-                var bData = b.data() as Map<String, dynamic>;
+            // Sort goalsList alphabetically based on the goal text
+            goalsList.sort((a, b) {
+              var aData = a.data() as Map<String, dynamic>;
+              var bData = b.data() as Map<String, dynamic>;
 
-                return _isSortedAscending
-                    ? aData['goal'].compareTo(bData['goal'])
-                    : bData['goal'].compareTo(aData['goal']);
-              });
+              return _isSortedAscending
+                  ? aData['goal'].compareTo(bData['goal'])
+                  : bData['goal'].compareTo(aData['goal']);
+            });
 
-              return ListView.separated(
-                itemCount: goalsList.length,
-                itemBuilder: (context, index) {
-                  //Get individual goal from database
-                  DocumentSnapshot document = goalsList[index];
-                  String docID = document.id;
+            return ListView.separated(
+              itemCount: goalsList.length,
+              itemBuilder: (context, index) {
+                //Get individual goal from database
+                DocumentSnapshot document = goalsList[index];
+                String docID = document.id;
 
-                  //Get goal each doc
-                  Map<String, dynamic> data =
-                      document.data() as Map<String, dynamic>;
-                  String goalText = data['goal'];
+                //Get goal each doc
+                Map<String, dynamic> data =
+                    document.data() as Map<String, dynamic>;
+                String goalText = data['goal'];
 
-                  // Display
-                  return Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: ListTile(
-                      title:
-                          Text(goalText, style: TextStyle(color: Colors.white)),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5),
-                              bottomLeft: Radius.circular(5),
-                              bottomRight: Radius.circular(5))),
-                      tileColor: Colors.lightBlueAccent,
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () => notesDialogBox(docID: docID),
-                            icon: const Icon(Icons.edit),
-                            color: Colors.white,
-                          ),
-                          IconButton(
-                            onPressed: () =>
-                                firestoreService.deleteGoals(docID),
-                            icon: const Icon(Icons.delete),
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
+                // Display
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: ListTile(
+                    title:
+                        Text(goalText, style: TextStyle(color: Colors.white)),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5),
+                            bottomLeft: Radius.circular(5),
+                            bottomRight: Radius.circular(5))),
+                    tileColor: Colors.lightBlueAccent,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () => notesDialogBox(docID: docID),
+                          icon: const Icon(Icons.edit),
+                          color: Colors.white,
+                        ),
+                        IconButton(
+                          onPressed: () => firestoreService.deleteGoals(docID),
+                          icon: const Icon(Icons.delete),
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
-                  );
-                },
-                // Separator for list
-                separatorBuilder: (context, index) => const Divider(
-                  color: Colors.white,
-                  thickness: 0.5,
-                ),
-              );
-            } else {
-              return const Text('No goals yet...');
-            }
-          }),
+                  ),
+                );
+              },
+              // Separator for list
+              separatorBuilder: (context, index) => const Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+            );
+          } else {
+            return ListView(children: const [
+              ListTile(
+                title: Text('No goals yet...'),
+              ),
+            ]);
+          }
+        },
+      ),
     );
   }
 }
