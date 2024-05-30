@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                       style: const TextStyle(color: Colors.white),
                     ),
                     subtitle: Text(
-                      'Price: \$${goal.price}\nTarget Date: ${goal.targetDate.toLocal().toIso8601String().substring(0, 10)}',
+                      'Price: \₱${goal.price}\nTarget Date: ${goal.targetDate.toLocal().toIso8601String().substring(0, 10)}',
                       style: const TextStyle(color: Colors.white70),
                     ),
                     shape: const RoundedRectangleBorder(
