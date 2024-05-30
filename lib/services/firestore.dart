@@ -1,33 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:goals_app/models/goals.dart';
 
 class FirestoreService {
-  //Get List of Goals
-  final CollectionReference goals =
-      FirebaseFirestore.instance.collection("goals");
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  //Create: Add new goal to database
-  Future<void> addGoal(String goal) {
-    return goals.add({
-      'goal': goal,
-      'timestamp': Timestamp.now(),
-    });
+  // Get a stream of goals from Firestore
+  Stream<List<Goals>> getGoalsStream() {
+    return _db
+        .collection('goals')
+        .withConverter<Goals>(
+          fromFirestore: (snapshot, _) => Goals.fromJson(snapshot.data()!),
+          toFirestore: (goal, _) => goal.toJson(),
+        )
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              Goals goal = doc.data();
+              goal.id = doc.id;
+              return goal;
+            }).toList());
   }
 
-  //Read: Get goal/s in database
-  Stream<QuerySnapshot> getGoalsStream() {
-    return goals.orderBy('timestamp', descending: true).snapshots();
+  // Add a new goal to Firestore
+  Future<void> addGoal(Goals goal) {
+    return _db.collection('goals').add(goal.toJson());
   }
 
-  //Update: Update goals written
-  Future<void> updateGoals(String docID, String newGoals) {
-    return goals.doc(docID).update({
-      'goal': newGoals,
-      'timestamp': Timestamp.now(),
-    });
+  // Update an existing goal in Firestore
+  Future<void> updateGoals(String id, Goals goal) {
+    return _db.collection('goals').doc(id).set(goal.toJson());
   }
 
-  //Delete: Delete goals
-  Future<void> deleteGoals(String docID) {
-    return goals.doc(docID).delete();
+  // Delete a goal from Firestore
+  Future<void> deleteGoals(String id) {
+    return _db.collection('goals').doc(id).delete();
   }
 }
