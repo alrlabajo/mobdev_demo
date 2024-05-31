@@ -15,9 +15,9 @@ class WelcomePage extends StatelessWidget {
               Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(16),
+                child: const Icon( //App Logo
+                  Icons.access_time,
+                  size: 100.0, 
                 ),
               ),
               SizedBox(height: 20),
@@ -38,7 +38,8 @@ class WelcomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              ElevatedButton( //Center Button
+              ElevatedButton(
+                //Center Button
                 onPressed: () {
                   Navigator.pushNamed(context, '/homepage');
                 },
@@ -47,7 +48,8 @@ class WelcomePage extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 ),
                 child: const Text(
                   'Enter Goals',

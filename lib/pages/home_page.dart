@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                     return null;
                   },
                 ),
-                DropdownButtonFormField<Category>(
+                DropdownButtonFormField<Category>( //Dropdown for Category
                   value: selectedCategory,
                   decoration: const InputDecoration(labelText: 'Category'),
                   items: Category.values.map((category) {
@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                     selectedCategory = value!;
                   },
                 ),
-                DropdownButtonFormField<Frequency>(
+                DropdownButtonFormField<Frequency>( //Dropdown for Frequency
                   value: selectedFrequency,
                   decoration: const InputDecoration(labelText: 'Frequency'),
                   items: Frequency.values.map((frequency) {
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     selectedFrequency = value!;
                   },
                 ),
-                ElevatedButton(
+                ElevatedButton( //Date Picker for Target Date
                   onPressed: () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
